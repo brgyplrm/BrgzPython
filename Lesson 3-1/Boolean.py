@@ -39,6 +39,6 @@ else:
   print("NO!")
 
 
-# Checker if a object is an integer or not
+# Checker if a object is an integer/float/str or not
 x = 200
 print(isinstance(x, int))
