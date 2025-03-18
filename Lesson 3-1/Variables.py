@@ -35,4 +35,57 @@ myvar2 = "John"
     my-var = "John"
     my var = "John" 
 """
+# many values in multiple variables in one line
+x, y, z = "Orange", "Banana", "Cherry"
+print(x)
+print(y)
+print(z)
+
+# one value in multiple variables
+
+x = y = z = "Orange"
+print(x)
+print(y)
+print(z)
+
+# unpacking collection = (collection of values in a  list and tuples) allows to extract values into variables 
+fruits = ["apple", "banana", "cherry"]
+x, y, z = fruits
+print(x)
+print(y)
+print(z)
+
+#Global Variables 
+
+x = "awesome" 
+
+def myfunc():
+  print("Python is " + x)
+
+myfunc() 
+#Going to print the global 
+
+x = "awesome"
+
+def myfunc():
+  x = "fantastic"
+  print("Python is " + x)
+
+myfunc()
+
+print("Python is " + x)
+#Still going to print the global
+
+#Keyword
+
+def myfunc():
+  #to make the variable global within the code
+  global x
+  x = "fantastic"
+
+myfunc()
+
+print("Python is " + x)
+
+
 
