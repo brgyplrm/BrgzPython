@@ -106,6 +106,8 @@ def StudentInput():
             subject_count += 1
             subCount = subject_count
 
+            print("\n")
+
             SubRec = Subject(SubCode, SubDesc, NoofUnits, MidGrade, FinalGrade, AverageGrade, Remarks)
             SubRec.AppendSubject()
 
@@ -251,7 +253,7 @@ def StudentEdit():
 
         editAgain = input("Edit another student? Yes or No: ").capitalize()
         if editAgain != "Yes":
-            print("Student Records Input")
+            print("\nStudent Records Input")
             print("----------------------")
             print("  [A] Add Students    ")
             print("  [B] Edit Students   ")
@@ -300,7 +302,7 @@ def StudentDelete():
 
         deleteAgain = input("Delete another student? Yes or No: ").capitalize()
         if deleteAgain != "Yes":
-            print("Student Records Input")
+            print("\nStudent Records Input")
             print("----------------------")
             print("  [A] Add Students    ")
             print("  [B] Edit Students   ")
@@ -318,7 +320,7 @@ def StudentView():
                 print("\nStudent Records:\n")
                 print(records)
             else:
-                print("No records found.")
+                print("No records found.\n")
     except FileNotFoundError:
         print("StudentRec.txt file not found.")
 
