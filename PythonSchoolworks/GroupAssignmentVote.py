@@ -801,67 +801,34 @@ def create_voter_record_form():
     close_button.grid(row=1, column=1, padx=20, pady=20)
 
     return form_window
+
+
 class VoterSearchWindow:
     def __init__(self):
-        # This would be implemented for the View functionality
-        root = tk.Tk()
-        root.title("Voter System")
-        root.geometry("500x250")
+        self.root = tk.Toplevel()
+        self.root.title("Voter Search")
+        self.root.geometry("500x350")
+        self.root.resizable(False, False)
 
         # Add header label
-        header_label = tk.Label(root, text="My Search", font=("Arial", 12))
+        header_label = tk.Label(self.root, text="Voter Search", font=("Arial", 12, "bold"))
         header_label.pack(fill=tk.X, pady=(10, 5))
 
         # Add separator line
-        separator = tk.Frame(root, height=2, bg="black")
+        separator = tk.Frame(self.root, height=2, bg="black")
         separator.pack(fill=tk.X, padx=10)
 
         # Create frame for search components
-        search_frame = tk.Frame(root)
-        search_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        search_frame = tk.Frame(self.root)
+        search_frame.pack(fill=tk.X, padx=20, pady=20)
 
         # Add ID label
         id_label = tk.Label(search_frame, text="Voter's ID Number:")
         id_label.grid(row=0, column=0, sticky="w", pady=10)
 
         # Add entry field
-        id_entry = tk.Entry(search_frame, width=30)
-        id_entry.grid(row=0, column=1, padx=10)
-
-        # Function for search button
-        def search_voter():
-            voter_id = id_entry.get()
-            if voter_id:
-                result_window = tk.Toplevel(root)
-                result_window.title("Search Result")
-                result_window.geometry("300x150")
-
-                message = f"Searching for voter ID: {voter_id}"
-                tk.Label(result_window, text=message, pady=20).pack()
-
-                tk.Button(
-                    result_window,
-                    text="OK",
-                    command=result_window.destroy,
-                    bg="purple",
-                    fg="white",
-                    padx=20
-                ).pack()
-            else:
-                error_window = tk.Toplevel(root)
-                error_window.title("Error")
-                error_window.geometry("300x150")
-
-                tk.Label(error_window, text="Please enter a Voter ID!", pady=20).pack()
-
-                tk.Button(
-                    error_window,
-                    text="OK",
-                    command=error_window.destroy,
-                    bg="red",
-                    fg="white",
-                    padx=20
-                ).pack()
+        self.id_entry = tk.Entry(search_frame, width=30)
+        self.id_entry.grid(row=0, column=1, padx=10)
 
         # Add search button
         search_button = tk.Button(
@@ -871,21 +838,85 @@ class VoterSearchWindow:
             fg="white",
             padx=20,
             pady=5,
-            command=search_voter
+            command=self.search_voter
         )
         search_button.grid(row=0, column=2, padx=10)
 
+        # Create result frame
+        self.result_frame = tk.Frame(self.root)
+        self.result_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        # Initially hide the result frame
+        self.result_frame.pack_forget()
+
+        # Create text widget to display results
+        self.result_text = tk.Text(self.result_frame, height=10, width=50)
+        self.result_text.pack(fill=tk.BOTH, expand=True)
+        self.result_text.config(state=tk.DISABLED)
+
         # Add cancel button
         cancel_button = tk.Button(
-            root,
-            text="Cancel",
+            self.root,
+            text="Close",
             bg="red",
             fg="white",
             padx=40,
             pady=5,
-            command=root.destroy
+            command=self.root.destroy
         )
         cancel_button.pack(pady=20)
+
+        # Center the window
+        self.center_window()
+
+    def center_window(self):
+        self.root.update_idletasks()
+        width = self.root.winfo_width()
+        height = self.root.winfo_height()
+        x = (self.root.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.root.winfo_screenheight() // 2) - (height // 2)
+        self.root.geometry(f'{width}x{height}+{x}+{y}')
+
+    def search_voter(self):
+        voter_id = self.id_entry.get().strip()
+
+        if not voter_id:
+            messagebox.showerror("Error", "Please enter a Voter ID")
+            return
+
+        conn = sqlite3.connect('Votes.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM Votes WHERE voteID = ?', (voter_id,))
+        result = cursor.fetchone()
+        conn.close()
+
+        # Clear the result frame and text
+        self.result_text.config(state=tk.NORMAL)
+        self.result_text.delete('1.0', tk.END)
+
+        if result:
+            # Format and display the voter information
+            self.result_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+            voter_info = f"Voter ID: {result[0]}\n"
+            voter_info += f"Name: {result[1]}\n"
+            voter_info += f"Precinct: {result[2]}\n"
+
+            if result[3]:  # If there are selected candidates
+                voter_info += f"\nSelected Candidates:\n"
+                candidates = result[3].split(',')
+                for i, candidate in enumerate(candidates, 1):
+                    voter_info += f"{i}. {candidate}\n"
+
+            voter_info += f"\nPrecinct Vote Count: {result[4]}\n"
+            voter_info += f"Total Votes: {result[5]}"
+
+            self.result_text.insert('1.0', voter_info)
+        else:
+            self.result_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+            self.result_text.insert('1.0', "No voter found with this ID.")
+
+        self.result_text.config(state=tk.DISABLED)
 
 def MainWindow():
     # Create main window
