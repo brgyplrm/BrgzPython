@@ -3,7 +3,6 @@ from tkinter import ttk
 from tkinter import messagebox
 import tkinter.font as tkfont
 import sqlite3
-import sys
 from datetime import datetime
 
 
@@ -122,6 +121,9 @@ class VoterManagementWindow:
 
         # Create data frame
         self.create_data_frame()
+
+        # Create description frame
+        self.create_description_frame()
 
         # Center the window
         self.center_window()
@@ -801,98 +803,17 @@ def create_voter_record_form():
     close_button.grid(row=1, column=1, padx=20, pady=20)
 
     return form_window
-class VoterSearchWindow:
-    def __init__(self):
-        # This would be implemented for the View functionality
-        root = tk.Tk()
-        root.title("Voter System")
-        root.geometry("500x250")
-
-        # Add header label
-        header_label = tk.Label(root, text="My Search", font=("Arial", 12))
-        header_label.pack(fill=tk.X, pady=(10, 5))
-
-        # Add separator line
-        separator = tk.Frame(root, height=2, bg="black")
-        separator.pack(fill=tk.X, padx=10)
-
-        # Create frame for search components
-        search_frame = tk.Frame(root)
-        search_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
-
-        # Add ID label
-        id_label = tk.Label(search_frame, text="Voter's ID Number:")
-        id_label.grid(row=0, column=0, sticky="w", pady=10)
-
-        # Add entry field
-        id_entry = tk.Entry(search_frame, width=30)
-        id_entry.grid(row=0, column=1, padx=10)
-
-        # Function for search button
-        def search_voter():
-            voter_id = id_entry.get()
-            if voter_id:
-                result_window = tk.Toplevel(root)
-                result_window.title("Search Result")
-                result_window.geometry("300x150")
-
-                message = f"Searching for voter ID: {voter_id}"
-                tk.Label(result_window, text=message, pady=20).pack()
-
-                tk.Button(
-                    result_window,
-                    text="OK",
-                    command=result_window.destroy,
-                    bg="purple",
-                    fg="white",
-                    padx=20
-                ).pack()
-            else:
-                error_window = tk.Toplevel(root)
-                error_window.title("Error")
-                error_window.geometry("300x150")
-
-                tk.Label(error_window, text="Please enter a Voter ID!", pady=20).pack()
-
-                tk.Button(
-                    error_window,
-                    text="OK",
-                    command=error_window.destroy,
-                    bg="red",
-                    fg="white",
-                    padx=20
-                ).pack()
-
-        # Add search button
-        search_button = tk.Button(
-            search_frame,
-            text="Search",
-            bg="purple",
-            fg="white",
-            padx=20,
-            pady=5,
-            command=search_voter
-        )
-        search_button.grid(row=0, column=2, padx=10)
-
-        # Add cancel button
-        cancel_button = tk.Button(
-            root,
-            text="Cancel",
-            bg="red",
-            fg="white",
-            padx=40,
-            pady=5,
-            command=root.destroy
-        )
-        cancel_button.pack(pady=20)
 
 def MainWindow():
+    voter_form = None
+
+    # Hide login window
+    vote.withdraw()
+
     # Create main window
     mainwindow = tk.Toplevel()
     mainwindow.title("Main Form")
     mainwindow.geometry("400x300")
-    voter_form = None
 
     def open_new_form():
         nonlocal voter_form
@@ -994,18 +915,52 @@ def logout(mainwindow):
     vote.deiconify()
 
 
-# Set up valid credentials
-valid_credentials = {"admin": "password123"}
 
-# Create the main application window
+
+# Create login window
 vote = tk.Tk()
 vote.title("Login")
+vote.geometry("300x150")
+
+login_system = LoginSystem(vote, valid_credentials)
+
+# Center the login window
+window_width = 300
+window_height = 150
+screen_width = vote.winfo_screenwidth()
+screen_height = vote.winfo_screenheight()
+center_x = int(screen_width/2 - window_width/2)
+center_y = int(screen_height/2 - window_height/2)
+vote.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+
+frame = ttk.Frame(vote, padding="10")
+frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+
+# Username row
+entry_label = ttk.Label(frame, text="Username:")
+entry_label.grid(row=0, column=0, padx=5, pady=5)
+
+username_entry = ttk.Entry(frame, width=30)
+username_entry.grid(row=0, column=1, pady=5)
+
+# Password row
+password_label = ttk.Label(frame, text="Password:")
+password_label.grid(row=1, column=0, padx=5, pady=5)
+
+password_entry = ttk.Entry(frame, width=30, show="*")
+password_entry.grid(row=1, column=1, pady=5)
+
+# Login button
+login = ttk.Button(frame, text="Login", command=MainWindow)
+login.grid(row=2, column=0, pady=10)
+
+cancel = ttk.Button(frame, text="Cancel", command=vote.quit)
+cancel.grid(row=2, column=1, pady=10)
+
+# Bind Enter key to login
+vote.bind('<Return>', lambda event: MainWindow())
 
 # Create the database when the application starts
 create_database()
 
-# Initialize the login system with valid credentials
-login_system = LoginSystem(vote, valid_credentials)
-
-# Start the main loop
 vote.mainloop()
