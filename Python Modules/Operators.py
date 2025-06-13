@@ -19,7 +19,8 @@ print(10 / 3)
 print(10 % 3)  
 
 # Exponentiation (**) - Raises the first number to the power of the second
-print(2 ** 3)  
+print("exponent")
+print(2 ** 3)
 
 # Floor division (//) - Divides and rounds down to the nearest whole number
 print(10 // 3)  

@@ -362,3 +362,4 @@ print(list1)
 # reverse() - Reverses the order of the list
 # sort() - Sorts the list
 
+print(3**2)
